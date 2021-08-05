@@ -76,7 +76,7 @@ resource "aws_security_group" "sg_22_80" {
 }
 
 resource "aws_instance" "web" {
-  ami                         = "ami-YOUR-AMI-ID"
+  ami                         = data.aws_ami_ids.myami.ids[0]
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.subnet_public.id
   vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
@@ -87,6 +87,20 @@ resource "aws_instance" "web" {
   }
 }
 
+output "my_ami" {
+  value = aws_instance.web.ami
+}
+
 output "public_ip" {
   value = aws_instance.web.public_ip
+}
+
+data "aws_ami_ids" "myami" {
+  owners = ["Your Account ID"]
+  # sort_ascending = true
+
+  filter {
+    name   = "name"
+    values = ["learn-terraform-packer-*"]
+  }
 }
