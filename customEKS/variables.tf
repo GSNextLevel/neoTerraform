@@ -18,3 +18,16 @@ variable "instance_type" {
 variable "image_id" {
   default = ["ami-0ba9feae3dafa4606"]
 }
+
+variable "node_group_name" {}
+variable "key_name" {}
+
+variable "asg_desired_size" {
+  default = 3
+}
+variable "asg_max_size" {
+  default = 5
+}
+variable "asg_min_size" {
+  default = 3
+}

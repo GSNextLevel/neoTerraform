@@ -27,8 +27,8 @@ resource "aws_iam_role_policy_attachment" "eks-cluster-AmazonEKSVPCResourceContr
   role       = aws_iam_role.eks-cluster.name
 }
 
-resource "aws_security_group" "eks-cluster" {
-  name        = "terraform-eks-cluster"
+resource "aws_security_group" "cluster-additional-sg" {
+  name        = "cluster-additional-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = aws_vpc.eks_vpc.id
 
@@ -49,7 +49,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.eks-cluster.arn
 
   vpc_config {
-    security_group_ids = [aws_security_group.eks-cluster.id]
+    security_group_ids = [aws_security_group.cluster-additional-sg.id]
     subnet_ids         = aws_subnet.eks_subnet[*].id
   }
 

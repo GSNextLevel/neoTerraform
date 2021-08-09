@@ -31,3 +31,8 @@ override.tf.json
 # SSH Key
 tf-packer
 tf-packer.*
+
+# tfvars
+*.tfvars
+.DS_Store
+*.hcl
