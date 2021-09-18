@@ -1,12 +1,10 @@
-## Simple Web Server by Terraform
+## Web Server Cluster by Terraform
 
 AWS Cloud 위에 security group, Instance, launch configuration, ASG, CLB 만을 정의하여 웹서버 클러스터를 작동시킵니다.
 
 ![simplewebserver](../../image/webserver_cluster.png)
 
 <br>
-
-
 
 ### Terraform Resource Lifecycle
 
