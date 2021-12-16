@@ -16,7 +16,8 @@ variable "instance_type" {
 }
 
 variable "image_id" {
-  default = ["ami-0ba9feae3dafa4606"]
+  # https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/eks-optimized-ami.html
+  default = [""]
 }
 
 variable "node_group_name" {}
