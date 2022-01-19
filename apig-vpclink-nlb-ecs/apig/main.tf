@@ -56,18 +56,18 @@ resource "aws_route53_record" "example" {
   }
 }
 
-# Route - 점검 필요
-resource "aws_api_gateway_resource" "api-resource" {
-  rest_api_id = aws_api_gateway_rest_api.apig.id
-  parent_id   = aws_api_gateway_rest_api.apig.root_resource_id
-  path_part   = "/"
-}
+# Route : 하위 API 있을 경우 사용
+# resource "aws_api_gateway_resource" "api-resource" {
+#   rest_api_id = aws_api_gateway_rest_api.apig.id
+#   parent_id   = aws_api_gateway_rest_api.apig.root_resource_id
+#   path_part   = "home"
+# }
 
 resource "aws_api_gateway_method" "api-method" {
   rest_api_id   = aws_api_gateway_rest_api.apig.id
-  resource_id   = aws_api_gateway_resource.api-resource.id
+  resource_id   = aws_api_gateway_rest_api.apig.root_resource_id
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
-# 통합
+# VPC_LINK 통합

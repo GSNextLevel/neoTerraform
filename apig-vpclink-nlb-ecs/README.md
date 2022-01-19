@@ -29,6 +29,37 @@ docker image pull nginx
 
 - workspace를 사용한 리소스 분리
 - ACM 코드로 제어
+- api resource가 여러개일 경우, (resource, method, integration)과 관련된 코드가 길어짐
+
+  Swagger, Open API Json으로 관리해도, 통합 과정에서 1리소스 1통합으로 인한 코드 길이 증가
+
+  ```terraform
+  data "aws_api_gateway_rest_api" "my_rest_api" {
+  name = "Swagger"
+  }
+
+  data "aws_api_gateway_resource" "my_resource" {
+  rest_api_id = data.aws_api_gateway_rest_api.my_rest_api.id
+  path        = "/"
+  }
+
+  resource "aws_api_gateway_integration" "test" {
+  rest_api_id = data.aws_api_gateway_rest_api.my_rest_api.id
+  resource_id = data.aws_api_gateway_resource.my_resource.id
+  http_method = "POST"
+
+  type                    = "HTTP_PROXY"
+  uri                     = "https://www.google.de"
+  integration_http_method = "POST"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  content_handling        = "CONVERT_TO_TEXT"
+
+  connection_type = "VPC_LINK"
+  connection_id   = aws_api_gateway_vpc_link.nginx-vpclink.id
+  }
+  ```
+
+- 그 외 다수
 
 <br>
 
@@ -41,3 +72,9 @@ docker image pull nginx
 - `terraform state list` : local의 형상 파악
 - `terraform import aws_eks_cluster.eks_cluster {Cluster Name}` : 추가
 - `terraform destroy -target aws_iam_role.eks-node` : 삭제
+
+### CannotPullContainerError
+
+```
+STOPPED (CannotPullContainerError: inspect image has been retried 5 time(s): failed to resolve ref "docker.io/library/nginx:latest": failed to do request: Head https://registry-1.docker.io/v2/library/nginx/manifests/latest: dial tcp 52.72.252.48:443: i/o timeout)
+```
