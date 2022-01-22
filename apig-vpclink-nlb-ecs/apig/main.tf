@@ -56,18 +56,56 @@ resource "aws_route53_record" "example" {
   }
 }
 
-# Route : 하위 API 있을 경우 사용
-# resource "aws_api_gateway_resource" "api-resource" {
-#   rest_api_id = aws_api_gateway_rest_api.apig.id
-#   parent_id   = aws_api_gateway_rest_api.apig.root_resource_id
-#   path_part   = "home"
-# }
+# Route
+resource "aws_api_gateway_resource" "api-resource" {
+  rest_api_id = aws_api_gateway_rest_api.apig.id
+  parent_id   = aws_api_gateway_rest_api.apig.root_resource_id
+  path_part   = "home"
+}
 
 resource "aws_api_gateway_method" "api-method" {
   rest_api_id   = aws_api_gateway_rest_api.apig.id
-  resource_id   = aws_api_gateway_rest_api.apig.root_resource_id
-  http_method   = "OPTIONS"
+  resource_id   = aws_api_gateway_resource.api-resource.id
+  http_method   = "GET"
   authorization = "NONE"
 }
 
 # VPC_LINK 통합
+resource "aws_api_gateway_integration" "nginx-vpc-link" {
+  rest_api_id = aws_api_gateway_rest_api.apig.id
+  resource_id = aws_api_gateway_resource.api-resource.id
+  http_method = aws_api_gateway_method.api-method.http_method
+
+  request_templates = {
+    "application/json" = ""
+    "application/xml"  = "#set($inputRoot = $input.path('$'))\n{ }"
+  }
+
+  request_parameters = {
+    "integration.request.header.X-Authorization" = "'static'"
+    "integration.request.header.X-Foo"           = "'Bar'"
+  }
+
+  type                    = "HTTP"
+  uri                     = "http://${data.aws_lb.nginx-nlb.dns_name}"
+  integration_http_method = "GET"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  content_handling        = "CONVERT_TO_TEXT"
+
+  connection_type = "VPC_LINK"
+  connection_id   = aws_api_gateway_vpc_link.nginx-vpclink.id
+}
+
+resource "aws_api_gateway_deployment" "deploy" {
+  rest_api_id = aws_api_gateway_rest_api.apig.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "example" {
+  deployment_id = aws_api_gateway_deployment.deploy.id
+  rest_api_id   = aws_api_gateway_rest_api.apig.id
+  stage_name    = "dev"
+}

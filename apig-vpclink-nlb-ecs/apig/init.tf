@@ -27,3 +27,5 @@ data "aws_subnet_ids" "private-sub" {
     Name = "${var.vpc-name}-private-*"
   }
 }
+
+data "aws_lb" "nginx-nlb" {}
