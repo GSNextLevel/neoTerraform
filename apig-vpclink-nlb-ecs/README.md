@@ -48,6 +48,7 @@ docker image pull nginx
   resource_id = data.aws_api_gateway_resource.my_resource.id
   http_method = "POST"
 
+  # Use Proxy Integration
   type                    = "HTTP_PROXY"
   uri                     = "https://www.google.de"
   integration_http_method = "POST"
@@ -59,6 +60,7 @@ docker image pull nginx
   }
   ```
 
+- API Gateway Deploy의 Mutable 하게 업데이트 하는 부분을 테라폼으로 관리할 방법은?
 - 그 외 다수
 
 <br>

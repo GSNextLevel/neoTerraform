@@ -20,7 +20,7 @@ data "aws_vpc" "target" {
 
 # Get Subnet IDs
 data "aws_subnet_ids" "private-sub" {
-  count = length(data.aws_vpcs.vpcs.ids)
+  count  = length(data.aws_vpcs.vpcs.ids)
   vpc_id = data.aws_vpc.target[count.index].id
 
   tags = {

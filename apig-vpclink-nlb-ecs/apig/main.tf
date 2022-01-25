@@ -86,7 +86,7 @@ resource "aws_api_gateway_integration" "nginx-vpc-link" {
     "integration.request.header.X-Foo"           = "'Bar'"
   }
 
-  type                    = "HTTP"
+  type                    = "HTTP_PROXY"
   uri                     = "http://${data.aws_lb.nginx-nlb.dns_name}"
   integration_http_method = "GET"
   passthrough_behavior    = "WHEN_NO_MATCH"
@@ -108,4 +108,11 @@ resource "aws_api_gateway_stage" "example" {
   deployment_id = aws_api_gateway_deployment.deploy.id
   rest_api_id   = aws_api_gateway_rest_api.apig.id
   stage_name    = "dev"
+}
+
+# Map the custom domain and apig deploy domain
+resource "aws_api_gateway_base_path_mapping" "example" {
+  api_id      = aws_api_gateway_rest_api.apig.id
+  stage_name  = aws_api_gateway_stage.example.stage_name
+  domain_name = aws_api_gateway_domain_name.nginx-custom-domain.domain_name
 }
